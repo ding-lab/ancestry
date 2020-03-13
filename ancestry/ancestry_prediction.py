@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import yaml
@@ -9,6 +10,8 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
+
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 def get_ancestry_to_color(ancestries):
     colors = ['red', 'blue', 'green', 'orange', 'purple', 'gray', 'black', 'pink', 'brown']
@@ -98,8 +101,13 @@ def create_dfs(thousand_genomes_vcf_fp, sample_vcf_fp, stats_dict=None):
             keep_only=sample_df.columns)
 
     if list(sample_df.columns) != list(thousand_genomes_df.columns):
-        raise RuntimeError(f'sample dataframe and thousand genomes dataframe do not have the same\
- variants: sample_df-{sample_df.shape}, thousand_genomes_df-{thousand_genomes_df.shape}')
+        logging.warning(f'sample dataframe and thousand genomes dataframe do not have the same\
+ variants: sample_df-{sample_df.shape}, thousand_genomes_df-{thousand_genomes_df.shape}. \
+ trimming down.')
+        thousand_genomes_df = thousand_genomes_df[sample_df.columns]
+        logging.info(f'new thousand genomes shape is {thousand_genomes_df.shape}')
+#         raise RuntimeError(f'sample dataframe and thousand genomes dataframe do not have the same\
+#  variants: sample_df-{sample_df.shape}, thousand_genomes_df-{thousand_genomes_df.shape}')
 
     if stats_dict is not None:
         stats_dict['inputs_before_drop'] = {

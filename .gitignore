@@ -1,4 +1,5 @@
 data/
+executions/
 
 .ipynb_checkpoints/
 *.pyc

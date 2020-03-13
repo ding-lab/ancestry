@@ -1,7 +1,10 @@
 import argparse
+import logging
 import os
 
 import pandas as pd
+
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 CHROM_INDEX = 0
 POS_INDEX = 1
@@ -20,10 +23,6 @@ parser.add_argument('--output', type=str,
         help='output filepath')
 
 args = parser.parse_args()
-
-# READCOUNT_DIR = '/gscmnt/gc2737/ding/estorrs/ancestry/MM/readcounts/'
-# GENOMES_VCF = '/gscmnt/gc2737/ding/estorrs/1000-genomes/GRCh37/all.coding.sorted.02maf.10000sampled.sorted.snps.vcf'
-# OUTPUT_VCF_FP = '/gscmnt/gc2737/ding/estorrs/ancestry/MM/vcf/called.vcf'
 
 def get_readcount_fps_from_dir(dir_path, readcount_extension=True):
     fps = os.listdir(dir_path)
@@ -198,16 +197,18 @@ def write_vcf(header, vcf_df, fp):
 if __name__ == '__main__':
     fps = get_readcount_fps_from_dir(args.readcount_dir)
 
-    print('starting')
+    logging.info('grabbing positions and header from thousand genomes vcf')
     genomes_position_tups, genomes_header = get_headerless_vcf_position_tups(open(args.genomes_vcf))
-    print('getting readcount dicts')
+    logging.info(f'getting readcount dictionaries for {len(fps)} input readcount files')
     readcount_dicts = [get_readcount_dict(fp) for fp in fps]
-    print('making calls for samples')
 
+    logging.info('making calls')
     sample_to_calls = {s.split('/')[-1].replace('.readcount', ''):call_positions(genomes_position_tups, readcount_dict) 
                    for s, readcount_dict in zip(fps, readcount_dicts)}
-    print('merging dfs')
 
+    logging.info('merging sample call dataframes')
     new_df = merge_sample_calls(sample_to_calls)
+    logging.info(f'call dataframe of size {new_df.shape} created')
 
+    logging.info('writing vcf')
     write_vcf(genomes_header, new_df, args.output)
