@@ -219,8 +219,8 @@ def run_model(thousand_genomes_df, sample_df, target_df, sample_id_to_ancestry,
     # write your thousand genomes training pcs file
     write_principle_components_file(X_train_df.index, X_train_pcs, os.path.join(output_dir, 'thousand_genomes.training.pcs'))
 
-    plot_components(X_train_pcs, X_train_df.index, sample_id_to_ancestry, n=5, prefix='pc.thousand_genomes.training',
-            output_dir=output_dir)
+    #plot_components(X_train_pcs, X_train_df.index, sample_id_to_ancestry, n=5, prefix='pc.thousand_genomes.training',
+    #        output_dir=output_dir)
 
     # train random forest model
     scaler = StandardScaler()
@@ -242,8 +242,8 @@ def run_model(thousand_genomes_df, sample_df, target_df, sample_id_to_ancestry,
     # write your thousand genomes test pcs file
     write_principle_components_file(X_test_df.index, X_test_pcs, os.path.join(output_dir, 'thousand_genomes.test.pcs'))
 
-    plot_components(X_test_pcs, X_test_df.index, sample_id_to_ancestry, n=5, prefix='pc.thousand_genomes.test',
-            output_dir=output_dir)
+    #plot_components(X_test_pcs, X_test_df.index, sample_id_to_ancestry, n=5, prefix='pc.thousand_genomes.test',
+    #        output_dir=output_dir)
 
     X_test_pcs = scaler.transform(X_test_pcs)
     score = clf.score(X_test_pcs, y_test)
@@ -264,8 +264,8 @@ def run_model(thousand_genomes_df, sample_df, target_df, sample_id_to_ancestry,
     classes = clf.classes_
 
     sample_id_to_predicted_ancestry = {s_id:p for s_id, p in zip(sample_df.index, predictions)}
-    plot_components(X_test_pcs, sample_df.index, sample_id_to_predicted_ancestry, n=5,
-            prefix='pc.samples', output_dir=output_dir)
+    #plot_components(X_test_pcs, sample_df.index, sample_id_to_predicted_ancestry, n=5,
+    #        prefix='pc.samples', output_dir=output_dir)
 
     write_predictions_file(os.path.join(output_dir, 'predictions.tsv'),
             sample_df.index, predictions, probs, classes)
